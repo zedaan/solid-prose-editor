@@ -46,8 +46,6 @@ const App = () => {
       <Sider />
       <div ref={editor} className="editor" />
       <div ref={content} />
-      <Footer view={view()} />
-      <Items />
     </div>
   );
 };
