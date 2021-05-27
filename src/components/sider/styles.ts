@@ -77,6 +77,9 @@ const Wrapper = styled("div")`
       width: 100%;
       text-align: center;
       margin-top: 20px;
+      svg {
+        cursor: pointer;
+      }
     }
 
     .arrow {
