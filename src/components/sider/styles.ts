@@ -92,6 +92,7 @@ const Wrapper = styled("div")`
       margin: auto;
       margin-bottom: 72px;
       margin-top: 20px;
+      cursor: pointer;
     }
   }
 
