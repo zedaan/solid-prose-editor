@@ -78,10 +78,10 @@ const App = () => {
   return (
     <div className="editor--wrapper">
       <Show when={isSaved()}>
-        <div className="successMessage">Post Saved Successfully!</div>
+        <div className="successMessage">Successfully saved the post!</div>
       </Show>
       <Show when={isFailed()}>
-        <div className="errorMessage">Could Not Create Post!</div>
+        <div className="errorMessage">Failed to save the post!</div>
       </Show>
       <Header />
       <Sider />
