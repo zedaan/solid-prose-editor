@@ -379,3 +379,22 @@ li.ProseMirror-selectednode:after {
   display: flex;
   align-items: center;
 }
+
+.errorMessage,
+.successMessage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 200px;
+  box-shadow: 1px 1px 12px rgb(0 0 0 / 40%);
+  border-radius: 5px;
+  color: #fff;
+  z-index: 9;
+  padding: 20px;
+}
+
+.errorMessage {
+  color: red;
+}

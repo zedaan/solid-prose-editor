@@ -1,4 +1,4 @@
-import { createSignal, onMount } from "solid-js";
+import { createSignal, onMount, createResource, Show } from "solid-js";
 import { render } from "solid-js/web";
 import "./main.css";
 import { ThemeProvider } from "solid-styled-components";
@@ -10,15 +10,46 @@ import { schema } from "prosemirror-schema-basic";
 // @ts-ignore
 import { addListNodes } from "prosemirror-schema-list";
 import { setup } from "./components";
-import Footer from "./components/footer";
-import Items from './components/Items';
-import Header from './components/header';
-import Sider from './components/sider';
+import Header from "./components/header";
+import Sider from "./components/sider";
+import { debounce } from "./utils/debounce";
+import { CREATE_PAGE_MUTATION } from "./api/queries";
+import https from "./utils/https";
 
 const App = () => {
   let editor: any;
-  let content: any;
-  const [view, setView] = createSignal<any>(null);
+  let defaultContent: any = [];
+
+  const [view, setView] = createSignal<any>(null),
+    [isSaved, setIsSaved] = createSignal(false),
+    [isFailed, setIsFailed] = createSignal(false);
+
+  const handleInputChange = (e: any) => {
+    const [title, ...content]: any = e.state.doc.content.content;
+    https({
+      query: CREATE_PAGE_MUTATION,
+      variables: {
+        input: {
+          content: JSON.stringify(content),
+          slug: JSON.stringify(title),
+          title: JSON.stringify(title),
+          userId: 1,
+        },
+      },
+    })
+      .then(() => {
+        setIsSaved(true);
+        setTimeout(() => {
+          setIsSaved(false);
+        }, 2000)
+      })
+      .catch((err: any) => {
+        setIsFailed(true);
+        setTimeout(() => {
+          setIsFailed(false);
+        }, 2000)
+      });
+  };
 
   onMount(() => {
     const mySchema = new Schema({
@@ -29,9 +60,13 @@ const App = () => {
     setView(
       new EditorView(editor, {
         state: EditorState.create({
-          doc: DOMParser.fromSchema(mySchema).parse(content),
+          doc: DOMParser.fromSchema(mySchema).parse(defaultContent),
           plugins: setup({ schema: mySchema }),
         }),
+        handleTextInput: (e: any) => {
+          debounce(() => handleInputChange(e));
+          return false;
+        },
       })
     );
 
@@ -42,10 +77,15 @@ const App = () => {
 
   return (
     <div className="editor--wrapper">
+      <Show when={isSaved()}>
+        <div className="successMessage">Post Saved Successfully!</div>
+      </Show>
+      <Show when={isFailed()}>
+        <div className="errorMessage">Could Not Create Post!</div>
+      </Show>
       <Header />
       <Sider />
       <div ref={editor} className="editor" />
-      <div ref={content} />
     </div>
   );
 };
